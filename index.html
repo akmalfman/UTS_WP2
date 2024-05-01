@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Sistem Perpustakaan</title>
+</head>
+
+<body>
+    <div class="container my-5">
+        <h1 class="mb-4">Library Management System</h1>
+
+        <div id="alert-container"></div>
+
+        <h2>Available Books</h2>
+        <div id="library-container" class="mb-4"></div>
+
+        <h2>Borrowed Books</h2>
+        <div id="borrowed-books-container" class="mb-4"></div>
+
+        <h2>Search Results</h2>
+        <div id="search-results-container" class="mb-4"></div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>Menu</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <button class="btn btn-primary" onclick="library.printAvailableBooks()">Show Available Books</button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-success" onclick="library.addBookFromUserInput()">Add New Book</button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary" onclick="library.borrowBookFromUserInput()">Borrow Book</button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-warning" onclick="library.returnBookFromUserInput()">Return Book</button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-info" onclick="library.printBorrowedBooks()">Show Borrowed Books</button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary" onclick="library.searchBookFromUserInput()">Search Book</button>
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-danger" onclick="console.log('Thank you!')">Exit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Kelas Book merepresentasikan objek buku
+        class Book {
+            // Atribut-atribut buku
+            #title;
+            #author;
+            #year;
+            #isBorrowed;
+    
+            // Constructor untuk inisialisasi buku
+            constructor(title, author, year) {
+                this.#title = title;
+                this.#author = author;
+                this.#year = year;
+                this.#isBorrowed = false;
+            }
+    
+            // Getter untuk mendapatkan judul buku
+            getTitle() {
+                return this.#title;
+            }
+    
+            // Getter untuk mendapatkan status pinjam buku
+            isBorrowed() {
+                return this.#isBorrowed;
+            }
+    
+            // Fungsi untuk meminjam buku
+            borrowBook() {
+                if (!this.#isBorrowed) {
+                    this.#isBorrowed = true;
+                    console.log(`Buku ${this.#title} telah dipinjam.`);
+                    return true; // Return true jika berhasil dipinjam
+                } else {
+                    console.log(`Buku ${this.#title} sudah dipinjam sebelumnya.`);
+                    return false; // Return false jika sudah dipinjam sebelumnya
+                }
+            }
+    
+            // Fungsi untuk mengembalikan buku
+            returnBook() {
+                if (this.#isBorrowed) {
+                    this.#isBorrowed = false;
+                    console.log(`Buku ${this.#title} telah dikembalikan.`);
+                    return true; // Return true jika berhasil dikembalikan
+                } else {
+                    console.log(`Buku ${this.#title} belum dipinjam.`);
+                    return false; // Return false jika belum dipinjam sebelumnya
+                }
+            }
+        }
+    
+        // Kelas Library merepresentasikan objek perpustakaan
+        class Library {
+            // Koleksi buku dalam perpustakaan
+            #books = [];
+            // Daftar buku yang sedang dipinjam
+            #borrowedBooks = [];
+            // Daftar buku hasil pencarian
+            #searchResults = [];
+            // Batas maksimal buku yang dapat dipinjam per pengguna
+            #maxBorrowedBooks = 2;
+    
+            // Fungsi untuk menambahkan buku baru ke perpustakaan
+            addBook(book) {
+                this.#books.push(book);
+                console.log(`Buku ${book.getTitle()} berhasil ditambahkan ke perpustakaan.`);
+                this.renderLibraryContents();
+                this.showAddBookSuccessAlert();
+            }
+
+            // Fungsi untuk mencetak daftar buku yang tersedia
+            printAvailableBooks() {
+                console.log("Daftar buku yang tersedia:");
+                for (let book of this.#books) {
+                    if (!book.isBorrowed()) {
+                        console.log(`- ${book.getTitle()}`);
+                    }
+                }
+                console.log("==========================="); // Penambahan pemisah
+            }
+
+             // Fungsi untuk mencetak daftar buku yang sedang dipinjam
+            printBorrowedBooks() {
+                console.log("Daftar buku yang sedang dipinjam:");
+                for (let book of this.#borrowedBooks) {
+                    console.log(`- ${book.getTitle()}`);
+                }
+                console.log("===========================");
+            }
+    
+             // Fungsi untuk menampilkan menu
+    displayMenu() {
+        // Tidak lagi menampilkan pilihan angka 1-5
+        console.log("\nMenu:");
+    }
+
+    // Fungsi untuk menangani pilihan menu
+    handleMenuChoice() {
+        // Tidak lagi menggunakan prompt untuk meminta input
+        // Anda dapat memanggil fungsi terkait berdasarkan tombol yang diklik
+    }
+    
+            // Fungsi untuk menambahkan buku baru berdasarkan input pengguna
+            addBookFromUserInput() {
+                let title = prompt("Masukkan judul buku: ");
+                let author = prompt("Masukkan nama penulis: ");
+                let year = prompt("Masukkan tahun terbit: ");
+                let book = new Book(title, author, year);
+                this.addBook(book);
+            }
+    
+             // Fungsi untuk meminjam buku berdasarkan input pengguna
+                borrowBookFromUserInput() {
+                    let title = prompt("Masukkan judul buku yang ingin dipinjam: ");
+                    let book = this.findBookByTitle(title);
+                    if (book !== null && !book.isBorrowed() && this.#borrowedBooks.length < this.#maxBorrowedBooks) {
+                        book.borrowBook();
+                        this.#borrowedBooks.push(book);
+                        this.renderLibraryContents();
+                        this.renderBorrowedBooksContents();
+                        this.showBorrowBookSuccessAlert();
+                    } else if (this.#borrowedBooks.length >= this.#maxBorrowedBooks) {
+                        this.showMaxBorrowedBooksAlert();
+                    } else {
+                        console.log("Buku tidak ditemukan atau sudah dipinjam.");
+                    }
+                }
+
+            // Fungsi untuk mengembalikan buku berdasarkan input pengguna
+            returnBookFromUserInput() {
+                let title = prompt("Masukkan judul buku yang ingin dikembalikan: ");
+                let book = this.findBookByTitle(title);
+                if (book !== null && book.isBorrowed()) {
+                    book.returnBook();
+                    this.#borrowedBooks = this.#borrowedBooks.filter(b => b !== book);
+                    this.renderLibraryContents();
+                    this.renderBorrowedBooksContents();
+                    this.showReturnBookSuccessAlert();
+                } else {
+                    console.log("Buku tidak ditemukan atau belum dipinjam.");
+                }
+            }
+    
+            // Fungsi untuk mencari buku berdasarkan judul
+            findBookByTitle(title) {
+                return this.#books.find(book => book.getTitle().toLowerCase() === title.toLowerCase());
+            }
+             // Fungsi untuk mencari buku berdasarkan penulis
+            findBooksByAuthor(author) {
+                return this.#books.filter(book => book.getAuthor().toLowerCase() === author.toLowerCase());
+            }
+
+            // Fungsi untuk mencari buku berdasarkan input pengguna
+            searchBookFromUserInput() {
+                let searchTerm = prompt("Masukkan judul buku yang ingin dicari: ");
+                let foundBooks = this.findBookByTitle(searchTerm);
+                if (foundBooks === null) {
+                    foundBooks = this.findBooksByAuthor(searchTerm);
+                }
+
+                this.#searchResults = foundBooks;
+
+                if (this.#searchResults.length > 0) {
+                    console.log("Buku yang ditemukan:");
+                    for (let book of this.#searchResults) {
+                        console.log(`- ${book.getTitle()} (${book.getAuthor()})`);
+                    }
+                    this.renderSearchResults();
+                } else {
+                    console.log("Tidak ada buku yang ditemukan.");
+                }
+            }
+    
+             // Fungsi untuk merender konten perpustakaan
+            renderLibraryContents() {
+                let libraryContainerElement = document.getElementById('library-container');
+                libraryContainerElement.innerHTML = '';
+
+                for (let book of this.#books) {
+                    if (!book.isBorrowed()) {
+                        let bookElement = document.createElement('div');
+                        bookElement.textContent = book.getTitle();
+                        libraryContainerElement.appendChild(bookElement);
+                    }
+                }
+            }
+
+            // Fungsi untuk merender konten buku yang sedang dipinjam
+            renderBorrowedBooksContents() {
+                let borrowedBooksContainerElement = document.getElementById('borrowed-books-container');
+                borrowedBooksContainerElement.innerHTML = '';
+
+                for (let book of this.#borrowedBooks) {
+                    let bookElement = document.createElement('div');
+                    bookElement.textContent = book.getTitle();
+                    borrowedBooksContainerElement.appendChild(bookElement);
+                }
+            }
+
+            // Fungsi untuk merender konten hasil pencarian
+            renderSearchResults() {
+                let searchResultsContainerElement = document.getElementById('search-results-container');
+                searchResultsContainerElement.innerHTML = '';
+
+                for (let book of this.#searchResults) {
+                    let bookElement = document.createElement('div');
+                    bookElement.textContent = book.getTitle();
+                    searchResultsContainerElement.appendChild(bookElement);
+                }
+            }
+
+            // Fungsi untuk menampilkan pemberitahuan
+            showAddBookSuccessAlert() {
+                let alertContainer = document.getElementById('alert-container');
+                let alertElement = document.createElement('div');
+                alertElement.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+                alertElement.setAttribute('role', 'alert');
+                alertElement.innerHTML = `
+                    <strong>Sukses!</strong> Buku berhasil ditambahkan.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                alertContainer.appendChild(alertElement);
+                // Menutup pemberitahuan setelah 5 detik
+                setTimeout(() => {
+                    alertElement.remove();
+                }, 5000);
+            }
+
+            // Fungsi untuk menampilkan pemberitahuan saat buku berhasil dipinjam
+            showBorrowBookSuccessAlert() {
+                let alertContainer = document.getElementById('alert-container');
+                let alertElement = document.createElement('div');
+                alertElement.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+                alertElement.setAttribute('role', 'alert');
+                alertElement.innerHTML = `
+                    <strong>Sukses!</strong> Buku berhasil dipinjam.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                alertContainer.appendChild(alertElement);
+
+                // Menutup pemberitahuan setelah 5 detik
+                setTimeout(() => {
+                    let alert = document.querySelector('#alert-container .alert');
+                    let bsAlert = bootstrap.Alert.getInstance(alert);
+                    bsAlert.close();
+                }, 5000);
+            }
+
+            // Fungsi untuk menampilkan pemberitahuan saat batas maksimal peminjaman tercapai
+            showMaxBorrowedBooksAlert() {
+                let alertContainer = document.getElementById('alert-container');
+                let alertElement = document.createElement('div');
+                alertElement.classList.add('alert', 'alert-danger', 'alert-dismissible', 'fade', 'show');
+                alertElement.setAttribute('role', 'alert');
+                alertElement.innerHTML = `
+                    <strong>Perhatian!</strong> Anda telah mencapai batas maksimal buku yang dapat dipinjam.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                alertContainer.appendChild(alertElement);
+
+                // Menutup pemberitahuan setelah 5 detik
+                setTimeout(() => {
+                    let alert = document.querySelector('#alert-container .alert');
+                    let bsAlert = bootstrap.Alert.getInstance(alert);
+                    bsAlert.close();
+                }, 5000);
+            }
+            // Fungsi untuk menampilkan pemberitahuan saat buku berhasil dikembalikan
+            showReturnBookSuccessAlert() {
+                let alertContainer = document.getElementById('alert-container');
+                let alertElement = document.createElement('div');
+                alertElement.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+                alertElement.setAttribute('role', 'alert');
+                alertElement.innerHTML = `
+                    <strong>Sukses!</strong> Buku berhasil dikembalikan.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                alertContainer.appendChild(alertElement);
+                // Menutup pemberitahuan setelah 5 detik
+                setTimeout(() => {
+                    alertElement.remove();
+                }, 5000);
+            }
+
+        }
+    
+        // Contoh penggunaan
+        let library = new Library();
+    
+        // Menambahkan beberapa buku ke perpustakaan
+        let book1 = new Book("Laskar Pelangi", "Andrea Hirata", 2005);
+        let book2 = new Book("Ayat Ayat Cinta", "Habiburrahman El Shirazy", 2004);
+        let book3 = new Book("Bumi Manusia", "Pramoedya Ananta Toer", 1980);
+        library.addBook(book1);
+        library.addBook(book2);
+        library.addBook(book3);
+    
+        // Menampilkan menu interaktif
+        library.interactiveMenu();
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+
+</html>
