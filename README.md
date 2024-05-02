@@ -31,3 +31,6 @@ o	Menampilkan daftar buku yang sedang dipinjam<br/>
 o	Mencari buku<br/>
 •	Setiap aksi yang dilakukan akan memanggil fungsi-fungsi yang terdapat dalam kelas Library untuk melakukan operasi yang sesuai.<br/>
 •	Pemberitahuan akan ditampilkan saat terjadi event-event penting, seperti penambahan buku baru, peminjaman buku, pengembalian buku, dan saat batas maksimal peminjaman tercapai.
+
+
+Revisi : memperbaiki fitur search, menambah fitur sort , menambah fitur delete
